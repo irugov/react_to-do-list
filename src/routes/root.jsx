@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import { Link } from 'react-router-dom';
 import { TaskContext } from '../contexts/TaskContext';
 import TaskList from '../components/TaskList/TaskList';
 
@@ -9,6 +8,7 @@ function Root() {
         {id: nanoid(), value: "тест1", completed: false}, 
         {id: nanoid(), value: "тест2", completed: false}, 
         {id: nanoid(), value: "тест3", completed: true}, 
+        {id: nanoid(), value: "тест4", completed: true},
         {id: nanoid(), value: "тест4", completed: true},
       ]);
   
