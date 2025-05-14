@@ -1,25 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
-import TaskItem from './TaskItem';
+import { useMemo } from 'react';
+import usePersistedState from '../../hooks/usePersistedState';
+import { useTaskContext } from '../../contexts/TaskContext';
+import TaskSection from './TaskSection';
 
-function TaskList({tasks}) {  
+function TaskList() {  
+  // Получаем все данные из контекста
+  const { tasks } = useTaskContext();
+
   // Разделяем задачи на активные и завершенные
   const activeTasks = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
   const completedTasks = useMemo(() => tasks.filter(task => task.completed), [tasks]);
-  
-  // Кастомный хук для сворачивания/разворачивания списков задач с сохранением состояние с помощью localStorage
-  function usePersistedState(key, defaultValue) {
-    const [state, setState] = useState(() => {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : defaultValue;
-    });
-  
-    // Эффект для сохранения состояния сворачивания/разворачивания списков задач
-    useEffect(() => {
-      localStorage.setItem(key, JSON.stringify(state));
-    }, [key, state]);
-  
-    return [state, setState];
-  }
   
   // Использование кастомного хука:
   const [sectionsVisibility, setSectionsVisibility] = usePersistedState('sectionsVisibility', {
@@ -56,88 +46,21 @@ function TaskList({tasks}) {
         </header>
           
           <section className="grow bg-[#1c1c1c]">  
-            <section>
-                <div className="flex items-center gap-[7.5px] pl-[20px] h-[40px] cursor-pointer" onClick={ () => toggleVisibility('active') }>
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="8px" height="8px" viewBox="-4.5 0 20 20" version="1.1">
-                        <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                            <g id="Dribbble-Light-Preview" transform="translate(-305.000000, -6679.000000)" fill="#535358">
-                                <g id="icons" transform="translate(56.000000, 160.000000)">
-                                    <path d="M249.365851,6538.70769 L249.365851,6538.70769 C249.770764,6539.09744 250.426289,6539.09744 250.830166,6538.70769 L259.393407,6530.44413 C260.202198,6529.66364 260.202198,6528.39747 259.393407,6527.61699 L250.768031,6519.29246 C250.367261,6518.90671 249.720021,6518.90172 249.314072,6519.28247 L249.314072,6519.28247 C248.899839,6519.67121 248.894661,6520.31179 249.302681,6520.70653 L257.196934,6528.32352 C257.601847,6528.71426 257.601847,6529.34685 257.196934,6529.73759 L249.365851,6537.29462 C248.960938,6537.68437 248.960938,6538.31795 249.365851,6538.70769" 
-                                    id="arrow_right-[#336]"
-                                    {...( !sectionsVisibility.active ? {transform: "translate(254.000000, 6529.000000) rotate(90) translate(-254.000000, -6529.000000)"} : {} )}></path>
-                                </g>
-                            </g>
-                        </g>
-                    </svg>
-                    <h2 className="text-[12px] font-bold">Активно</h2>
-                    <p className="text-[#535358]">{ activeTasks.length }</p>
-                </div>
-                {!sectionsVisibility.active && (
-                  <ul className="[&_li:last-child_div_div:last-child]:hidden">
-                    { activeTasks.map(task => (
-                          <TaskItem 
-                            key={task.id}
-                            {...task} /> 
-                      ))
-                    }
-                  </ul>
-                )}
-              
-            </section>
 
-            <section>
-                <div className="flex items-center gap-[7.5px] pl-[20px] h-[40px] cursor-pointer" onClick={ () => toggleVisibility('completed') }>
-                  <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="8px" height="8px" viewBox="-4.5 0 20 20" version="1.1">
-                      <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                          <g id="Dribbble-Light-Preview" transform="translate(-305.000000, -6679.000000)" fill="#535358">
-                              <g id="icons" transform="translate(56.000000, 160.000000)">
-                                  <path d="M249.365851,6538.70769 L249.365851,6538.70769 C249.770764,6539.09744 250.426289,6539.09744 250.830166,6538.70769 L259.393407,6530.44413 C260.202198,6529.66364 260.202198,6528.39747 259.393407,6527.61699 L250.768031,6519.29246 C250.367261,6518.90671 249.720021,6518.90172 249.314072,6519.28247 L249.314072,6519.28247 C248.899839,6519.67121 248.894661,6520.31179 249.302681,6520.70653 L257.196934,6528.32352 C257.601847,6528.71426 257.601847,6529.34685 257.196934,6529.73759 L249.365851,6537.29462 C248.960938,6537.68437 248.960938,6538.31795 249.365851,6538.70769" 
-                                  id="arrow_right-[#336]"
-                                  {...( !sectionsVisibility.completed ? {transform: "translate(254.000000, 6529.000000) rotate(90) translate(-254.000000, -6529.000000)"} : {} )}></path>
-                              </g>
-                          </g>
-                      </g>
-                  </svg>
-                  <h2 className="text-[12px] font-bold">Выполнено</h2>
-                  <p className="text-[#535358]">{ completedTasks.length }</p>
-                </div>
-                {!sectionsVisibility.completed && (
-                  <ul className="[&_li:last-child_div_div:last-child]:hidden">
-                    { completedTasks.map(task => (
-                          <TaskItem 
-                            key={task.id}
-                            {...task} /> 
-                      ))
-                    }
-                  </ul>
-                )}
-                
-              
-            </section>
-  
-            <p>1</p>
-            <p>1</p>
-            <p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p><p>1</p>
-            <p>1</p>
+            <TaskSection 
+              toggleVisibility={() => toggleVisibility('active')}
+              sectionsVisibility={sectionsVisibility.active}
+              title="Активно"
+              tasks={activeTasks}
+            />
+
+            <TaskSection 
+              toggleVisibility={() => toggleVisibility('completed')}
+              sectionsVisibility={sectionsVisibility.completed}
+              title="Выполнено"
+              tasks={completedTasks}
+            />
+
           </section>
         </main>;
 };
