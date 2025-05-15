@@ -1,14 +1,15 @@
-import { useRef, useEffect } from 'react';
-import { useTaskContext } from '../../contexts/TaskContext';
+import { useRef, useEffect, memo } from 'react';
+import { useTaskDataContext } from '../../contexts/TaskDataContext';
+import { useTaskUiContext } from '../../contexts/TaskUiContext';
 import ContextMenu from './ContextMenu';
 
 function TaskItem({ id, value, completed }) {
+    const { toggleTask } = useTaskDataContext();
     const { activeTaskId, 
-            setActiveTaskId, 
-            toggleTask, 
+            setActiveTaskId,
             openMenuId,
             setOpenMenuId 
-        } = useTaskContext();
+        } = useTaskUiContext();
 
     const menuRef = useRef(null); // Ссылка на DOM-элемент меню, для предотвращения нескольких открытых одновременно меню для разных задач
 
@@ -30,7 +31,7 @@ function TaskItem({ id, value, completed }) {
     return (
         <li
             className="relative group flex items-center px-[20px]" 
-            onClick={ (e) => {setActiveTaskId(id);} }
+            onClick={ (e) => {setActiveTaskId(id)} }
         >
             <div className="absolute left-[10px] -translate-x-[50%] opacity-0 group-hover:opacity-100 text-[#535358] hover:text-white hover:cursor-move">
                 =

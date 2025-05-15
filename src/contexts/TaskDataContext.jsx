@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
-const TaskContext = createContext();
+const TaskDataContext  = createContext();
 
-export function TaskProvider({ children, initialTasks = [] }) {
+export function TaskDataProvider({ children, initialTasks = [] }) {
    // Формируем стейт из initialTasks / выгружаем из localStorage
     const [tasks, setTasks] = useState(() => { 
       try {
@@ -23,11 +23,6 @@ export function TaskProvider({ children, initialTasks = [] }) {
         console.error('Ошибка при сохранении в localStorage:', error);
       }
     }, [tasks]);
-
-    //Храним в памяти активный таск, на который мы сейчас кликнули
-    const [activeTaskId, setActiveTaskId] = useState(null); 
-    //Храним в памяти для какого таска сейчас открыто кастомное контекстное меню
-    const [openMenuId, setOpenMenuId] = useState(null);
 
     //Функция для добавления новой задачи
     function addTask(inputValue) {
@@ -49,35 +44,18 @@ export function TaskProvider({ children, initialTasks = [] }) {
 
     //Функция для изменения текста задачи
     //Функция для удаления задачи
-
-
-    /*useEffect(() => {
-      function handleClickOutside(e) { //обработка клика на пустое место окна, снятие фокуса с задачи
-        setActiveTaskId(null);
-      }
-
-      window.addEventListener('click', handleClickOutside);
-
-      return () => {
-        window.removeEventListener('click', handleClickOutside);
-      };
-    }, []);*/
     
     return (
-      <TaskContext.Provider value={{ 
-        activeTaskId, 
-        setActiveTaskId,
+      <TaskDataContext.Provider value={{ 
         tasks,
         addTask,
         toggleTask,/*,
         editTask,
         deleteTask*/
-        openMenuId,
-        setOpenMenuId,
       }}>
         {children}
-      </TaskContext.Provider>
+      </TaskDataContext.Provider>
     );
   }
   
-  export const useTaskContext = () => useContext(TaskContext);
+  export const useTaskDataContext = () => useContext(TaskDataContext);

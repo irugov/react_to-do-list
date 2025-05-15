@@ -1,9 +1,10 @@
-import { nanoid } from 'nanoid';
 import { useState } from 'react';
-import { useTaskContext } from '../../contexts/TaskContext';
+import { useTaskDataContext } from '../../contexts/TaskDataContext';
+import { useTaskUiContext } from '../../contexts/TaskUiContext';
 
 function TaskForm() {
-    const { setActiveTaskId, addTask } = useTaskContext();
+    const { addTask } = useTaskDataContext();
+    const { setActiveTaskId } = useTaskUiContext();
 
     const [inputValue, setInputValue] = useState('');
 

@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import { TaskProvider  } from '../contexts/TaskContext';
+import { TaskDataProvider  } from '../contexts/TaskDataContext';
+import { TaskUiProvider  } from '../contexts/TaskUiContext';
 import TaskList from '../components/TaskList/TaskList';
 
 function Root() {
@@ -12,9 +13,11 @@ function Root() {
       ];
   
     return (
-      <TaskProvider initialTasks={initialTasks}>
+      <TaskDataProvider initialTasks={initialTasks}>
+        <TaskUiProvider>
           <TaskList />
-      </TaskProvider >
+        </TaskUiProvider>
+      </TaskDataProvider >
     )
   }
   

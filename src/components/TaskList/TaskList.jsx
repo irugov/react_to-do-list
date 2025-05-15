@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import usePersistedState from '../../hooks/usePersistedState';
-import { useTaskContext } from '../../contexts/TaskContext';
+import { useTaskDataContext } from '../../contexts/TaskDataContext';
 import TaskSection from './TaskSection';
 import TaskForm from './TaskForm';
 
 function TaskList() {  
   // Получаем все данные из контекста
-  const { tasks } = useTaskContext();
+  const { tasks } = useTaskDataContext();
 
   // Разделяем задачи на активные и завершенные
   const activeTasks = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
