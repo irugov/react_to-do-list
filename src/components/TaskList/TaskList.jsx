@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import usePersistedState from '../../hooks/usePersistedState';
 import { useTaskContext } from '../../contexts/TaskContext';
 import TaskSection from './TaskSection';
+import TaskForm from './TaskForm';
 
 function TaskList() {  
   // Получаем все данные из контекста
@@ -42,7 +43,7 @@ function TaskList() {
                     </svg>
                   </div>
             </div>
-            <input className="flex flex-none rounded-[6px] bg-neutral-800 w-full px-[12px] py-[7px] mb-[20px] placeholder:text-neutral-600" placeholder='+ Добавить задачу в "Входящие"'/>
+            <TaskForm />
         </header>
           
           <section className="grow bg-[#1c1c1c]">  

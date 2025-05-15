@@ -19,7 +19,7 @@ function TaskSection({toggleVisibility, sectionsVisibility, title, tasks }) {
                     <p className="text-[#535358]">{ tasks.length }</p>
                 </div>
                 {!sectionsVisibility && (
-                  <ul className="[&_li:last-child_div_div:last-child]:hidden">
+                  <ul className="[&_li:last-child_.borderline]:hidden">
                     { tasks.map(task => (
                         <TaskItem 
                             key={task.id}
