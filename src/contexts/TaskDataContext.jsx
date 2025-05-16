@@ -43,15 +43,29 @@ export function TaskDataProvider({ children, initialTasks = [] }) {
     }
 
     //Функция для изменения текста задачи
+    function editTask(id, newValue) {
+      setTasks(tasks.map(task => (
+        ((task.id === id) && task.value !== newValue && newValue.trim())
+        ? {...task, value: newValue}
+        : task
+      )))
+    }
+
     //Функция для удаления задачи
+    function deleteTask(id) {
+      if(window.confirm('Подтведить удаление')){
+        setTasks(tasks.filter(task => task.id !== id));
+      }
+    }
+
     
     return (
       <TaskDataContext.Provider value={{ 
         tasks,
         addTask,
-        toggleTask,/*,
+        toggleTask,
         editTask,
-        deleteTask*/
+        deleteTask,
       }}>
         {children}
       </TaskDataContext.Provider>
