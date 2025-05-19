@@ -1,12 +1,81 @@
-# React + Vite
+# 📝 React To-Do List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple yet functional to-do list application built with **React**, using **Context API**, **localStorage**, and modern UI practices. Allows users to manage tasks with editable text, checkboxes, and optional due dates.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* 📋 Add, edit, and delete tasks
+* ✅ Mark tasks as completed
+* 🗓️ Set and update due dates using a calendar
+* 💾 Persistent storage via `localStorage`
+* 🎨 Clean and responsive UI with Tailwind CSS
+* ⚛️ Built using functional components and React Hooks
 
-## Expanding the ESLint configuration
+## 📦 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* [React](https://reactjs.org/)
+* [Vite](https://vitejs.dev/)
+* [Tailwind CSS](https://tailwindcss.com/)
+* [React DatePicker](https://reactdatepicker.com/)
+* Custom `dateHelpers` for formatting and handling dates
+
+## 📂 Project Structure
+
+```
+src/
+├── components/        # UI components (TaskItem, TaskList, etc.)
+├── context/           # TaskDataContext & TaskUiContext for global state management
+├── hooks/             # Custom React hooks (e.g., usePersistedState)
+├── routes/            # App routing configuration (root compontent, about page)
+├── utils/             # Utility functions (e.g., dateHelpers)
+└── main.jsx           # Entry point
+```
+
+## 🧠 KEY CONCEPTS
+### 🧭 State Management
+
+All tasks and related state are managed through React Context, enabling a centralized and clean data flow:
+- TaskDataContext – Manages task data: adding, deleting, updating tasks, setting dates, and more.
+- TaskUiContext – Manages UI-related states: toggling date editing, focus states, calendar visibility, etc.
+
+### 📆 Date Support
+
+Tasks can optionally have a due date, shown in a readable format using helper functions. Dates can be modified via an inline calendar.
+
+### 🔁 Persistence
+
+Tasks are stored in `localStorage`, allowing them to persist across page reloads.
+
+## 🛠️ Getting Started
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/irugov/react_to-do-list.git
+cd react_to-do-list
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+
+## 🧪 Future Improvements
+
+* Task prioritization
+* Filter by date or status
+* Drag & drop task ordering
+* Auth and cloud sync
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
