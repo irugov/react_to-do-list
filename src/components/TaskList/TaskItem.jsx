@@ -2,12 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { useTaskDataContext } from '../../contexts/TaskDataContext';
 import { useTaskUiContext } from '../../contexts/TaskUiContext';
 import ContextMenu from './ContextMenu';
+import { formatDate, getDateColor } from '../../utils/dateHelpers';
+import DatePicker from 'react-datepicker';
 
-function TaskItem({ id, value, completed }) {
+function TaskItem({ id, value, completed, date }) {
     const [inputValue, setInputValue] = useState(value);
     const editInputRef = useRef(null);
     
-    const { toggleTask, editTask } = useTaskDataContext(); //отметка задачи выполненной/активной
+    const { toggleTask, editTask, setNewDate } = useTaskDataContext(); //отметка задачи выполненной/активной
     const { activeTaskId, 
             setActiveTaskId,
             openMenuId,
@@ -17,6 +19,9 @@ function TaskItem({ id, value, completed }) {
         } = useTaskUiContext();
 
     const menuRef = useRef(null); // Ссылка на DOM-элемент меню, для предотвращения нескольких открытых одновременно меню для разных задач
+
+    const [dateIsEditing, setDateIsEditing] = useState(false); //Открытие/закрытие меню выбора даты для задачи
+    const [tempDate, setTempDate] = useState(null); //чтобы при клике на даты в DatePicker не выпонялось изменение сразу, а только после закрытия меню
 
     // Закрытие меню при клике вне его области
     useEffect(() => {
@@ -55,7 +60,6 @@ function TaskItem({ id, value, completed }) {
         <li
             id={id}
             className="relative group flex items-center px-[20px] min-w-0 w-full" 
-            onClick={ () => handleTaskOnClick(id) }
         >
             <div className="absolute left-[10px] -translate-x-[50%] opacity-0 group-hover:opacity-100 text-[#535358] hover:text-white hover:cursor-move">
                 =
@@ -63,7 +67,7 @@ function TaskItem({ id, value, completed }) {
   
             <div className={`
                 ${id === activeTaskId ? "bg-[#282828] rounded-md" : "group-hover:bg-[#363636] group-hover:rounded-md" }
-                grow min-w-0 overflow-hidden
+                grow min-w-0 
             `}>
                 
                 <div className="flex items-center px-[14px] min-w-0">
@@ -72,26 +76,69 @@ function TaskItem({ id, value, completed }) {
                         onChange={ () => toggleTask(id) }
                         />
                     
-                    <div className="p-[10px] hover:border-none min-w-0 flex-1 overflow-hidden">
-                        {isEditingId && (isEditingId === id) ? (
-                            <input
-                                ref={editInputRef}
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onBlur={(e) => handleEditTask(id, e.target.value)}
-                                onKeyDown={ (e) => {e.key === "Enter" && editInputRef.current.blur()} }
-                                autoFocus
-                               className="focus:outline-0 w-full min-w-0"
-                            />
-                        ) : (
-                            <p className="peer-checked:line-through truncate min-w-0">
-                                { value }
-                            </p>
-                        )}
+                    <div className="relative p-[10px] hover:border-none min-w-0 flex-1">
+                        <div className="flex justify-between min-w-0">
+                            <div 
+                                className="grow overflow-hidden" 
+                                onClick={ () => handleTaskOnClick(id) }
+                            >
+                                {isEditingId && (isEditingId === id) ? (
+                                    <input
+                                        ref={editInputRef}
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        onBlur={(e) => handleEditTask(id, e.target.value)}
+                                        onKeyDown={ (e) => {e.key === "Enter" && editInputRef.current.blur()} }
+                                        autoFocus
+                                        className="focus:outline-0 w-full min-w-0"
+                                    />
+                                ) : (
+                                    <p className="peer-checked:line-through truncate min-w-0">
+                                        { value }
+                                    </p>
+                                )}
+                            </div>
+                            <div className='flex items-center gap-2'>
+                                <span>+1</span>
+                                <div className="taskDate relative">
+                                    {(date && !dateIsEditing) && (
+                                        <span 
+                                            className={`${getDateColor(date)} cursor-pointer`}
+                                            onClick={() => setDateIsEditing(true)}>
+                                            {formatDate(date)}
+                                        </span> 
+                                    )}
+                                    {!date && (
+                                        <div 
+                                            className='flex items-center justify-center w-[20px] h-[20px] cursor-pointer hover:bg-[#4d4d4d] hover:rounded' 
+                                            onClick={() => setDateIsEditing(true)}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="16px" height="16px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+                                                <g>
+                                                    <path fill="#808080" d="M60,4h-7V3c0-1.657-1.343-3-3-3s-3,1.343-3,3v1H17V3c0-1.657-1.343-3-3-3s-3,1.343-3,3v1H4   C1.789,4,0,5.789,0,8v52c0,2.211,1.789,4,4,4h56c2.211,0,4-1.789,4-4V8C64,5.789,62.211,4,60,4z M18,53c0,0.553-0.447,1-1,1h-6   c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z M18,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5   c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M18,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6   c0.553,0,1,0.447,1,1V31z M30,53c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z    M30,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M30,31   c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V31z M42,53c0,0.553-0.447,1-1,1h-6   c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z M42,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5   c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M42,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6   c0.553,0,1,0.447,1,1V31z M54,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z    M54,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V31z M62,15H2V8   c0-1.104,0.896-2,2-2h7v4c0,1.657,1.343,3,3,3s3-1.343,3-3V6h30v4c0,1.657,1.343,3,3,3s3-1.343,3-3V6h7c1.104,0,2,0.896,2,2V15z"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    )}
+                                    {dateIsEditing && (
+                                        <div className="absolute top-[-10px] right-0 z-50">
+                                            <DatePicker
+                                                selected={date}
+                                                onChange={(newDate) => setTempDate(newDate)}
+                                                onClickOutside={() => { setDateIsEditing(false); setNewDate(id, tempDate); }}
+                                                inline
+                                            />
+                                        </div>
+                                    )}
+                                    </div>
+                                
+                            </div>    
+                        </div>
+                        <div className={ id === activeTaskId ? "borderline" : "borderline border-t border-[#535358] group-hover:opacity-0 absolute bottom-0 left-0 right-0 w-auto"}></div>
                     </div>
                     
                 </div>
-                <div className={ id === activeTaskId ? "borderline" : "borderline border-t border-[#535358] group-hover:opacity-0" }></div> 
+                 
             </div> 
   
             <div className="absolute right-[10px] -translate-x-[-50%] opacity-0 group-hover:opacity-100 text-[#535358] hover:text-white hover:cursor-pointer align-middle"

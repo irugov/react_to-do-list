@@ -25,11 +25,11 @@ export function TaskDataProvider({ children, initialTasks = [] }) {
     }, [tasks]);
 
     //Функция для добавления новой задачи
-    function addTask(inputValue) {
+    function addTask(inputValue, date = null) {
       const id = nanoid();
 
       setTasks([...tasks, 
-        {id: id, value: inputValue, completed: false}
+        {id: id, value: inputValue, completed: false, date: date}
       ]);
 
       return id;
@@ -58,6 +58,15 @@ export function TaskDataProvider({ children, initialTasks = [] }) {
       }
     }
 
+    //Функция для изменения даты задачи
+    function setNewDate(id, newDate) {
+      setTasks(tasks.map(task => (
+        ( (task.id === id) && task.date !== newDate )
+        ? {...task, date: newDate}
+        : task
+      )))
+    }
+
     
     return (
       <TaskDataContext.Provider value={{ 
@@ -66,6 +75,7 @@ export function TaskDataProvider({ children, initialTasks = [] }) {
         toggleTask,
         editTask,
         deleteTask,
+        setNewDate,
       }}>
         {children}
       </TaskDataContext.Provider>
