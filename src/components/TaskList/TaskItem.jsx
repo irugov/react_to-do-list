@@ -71,7 +71,7 @@ function TaskItem({ id, value, completed, date }) {
             `}>
                 
                 <div className="flex items-center px-[14px] min-w-0">
-                    <input type="checkbox" className="peer appearance-none w-[18px] h-[18px] cursor-pointer border border-[#535358] rounded mr-[5px] hover:bg-[#535358] checked:bg-[#535358] checked:bg-no-repeat checked:bg-center" 
+                    <input type="checkbox" className="appearance-none w-[18px] h-[18px] cursor-pointer border border-[#535358] rounded mr-[5px] hover:bg-[#535358] checked:bg-[#535358] checked:bg-no-repeat checked:bg-center" 
                         checked={ completed }
                         onChange={ () => toggleTask(id) }
                         />
@@ -93,22 +93,21 @@ function TaskItem({ id, value, completed, date }) {
                                         className="focus:outline-0 w-full min-w-0"
                                     />
                                 ) : (
-                                    <p className="peer-checked:line-through truncate min-w-0">
+                                    <p className={`${completed && "line-through text-neutral-600"} truncate min-w-0`}>
                                         { value }
                                     </p>
                                 )}
                             </div>
                             <div className='flex items-center gap-2'>
-                                <span>+1</span>
                                 <div className="taskDate relative">
                                     {(date && !dateIsEditing) && (
                                         <span 
-                                            className={`${getDateColor(date)} cursor-pointer`}
-                                            onClick={() => setDateIsEditing(true)}>
+                                            className={!completed ? `${getDateColor(date)} cursor-pointer` : 'text-neutral-600'}
+                                            onClick={!completed && (() => setDateIsEditing(true))}>
                                             {formatDate(date)}
                                         </span> 
                                     )}
-                                    {!date && (
+                                    {(!date && !completed) && (
                                         <div 
                                             className='flex items-center justify-center w-[20px] h-[20px] cursor-pointer hover:bg-[#4d4d4d] hover:rounded' 
                                             onClick={() => setDateIsEditing(true)}
