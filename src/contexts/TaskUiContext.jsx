@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
 
 const TaskUiContext  = createContext();
 
@@ -12,15 +12,17 @@ export function TaskUiProvider({ children }) {
     //Храним в памяти id редактируемого task
     const [isEditingId, setIsEditingId] = useState(null);
 
+    const value = useMemo(() => ({
+      activeTaskId, 
+      setActiveTaskId,
+      openMenuId,
+      setOpenMenuId,
+      isEditingId,
+      setIsEditingId
+    }), [activeTaskId, openMenuId, isEditingId]);
+
     return (
-      <TaskUiContext.Provider value={{ 
-        activeTaskId, 
-        setActiveTaskId,
-        openMenuId,
-        setOpenMenuId,
-        isEditingId,
-        setIsEditingId
-      }}>
+      <TaskUiContext.Provider value={value}>
         {children}
       </TaskUiContext.Provider>
     );

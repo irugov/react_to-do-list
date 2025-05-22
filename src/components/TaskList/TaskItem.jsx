@@ -88,7 +88,7 @@ function TaskItem({ id, value, completed, date }) {
                                         ref={editInputRef}
                                         value={inputValue}
                                         onChange={(e) => setInputValue(e.target.value)}
-                                        onBlur={(e) => handleEditTask(id, e.target.value)}
+                                        onBlur={(e) => {handleEditTask(id, e.target.value)}}
                                         onKeyDown={ (e) => {e.key === "Enter" && editInputRef.current.blur()} }
                                         autoFocus
                                         className="focus:outline-0 w-full min-w-0"

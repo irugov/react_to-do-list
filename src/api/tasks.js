@@ -3,7 +3,7 @@ const BASE_URL = "http://localhost:3001/tasks";
 //Получаем все задачи из базы
 export async function fetchTasks() {
     const res = await fetch(BASE_URL);
-    if (!res.ok) console.error("Ошибка загрузки массива задач");
+    if (!res.ok) throw new Error(errorData.message || "Ошибка загрузки массива задач");
     return res.json();
 }
 
@@ -14,13 +14,14 @@ export async function addTask(id, value, date) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, value, date, completed: false })
     })
-
+    if (!res.ok) throw new Error(errorData.message || "Ошибка загрузки массива задач");
     return res.json();
 }
 
 //Удалить задачу
 export async function deleteTask(id) {
     const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error(errorData.message || "Ошибка загрузки массива задач");
     return res.json();
 }
 
@@ -31,6 +32,7 @@ export async function updateTask(id, updates) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
     });
+    if (!res.ok) throw new Error(errorData.message || "Ошибка загрузки массива задач");
     return res.json();
 }
 

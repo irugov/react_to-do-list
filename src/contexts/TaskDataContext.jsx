@@ -15,68 +15,58 @@ export function TaskDataProvider({ children }) {
         .then(setTasks)
         .catch(err => setError(err.message))
         .finally(() => setLoading(false));
-    }, []);
+    }, );
 
     //Функция-обертка для оптимистичного обновления состояния tasks
     async function performTaskMutation({
       optimisticUpdate, // (prevTasks) => newTasks
       serverRequest,     // () => Promise<task | null>
-      rollback,          // откат к prevTasks
     }) {
-      const prev = [...tasks]; // сохранение текущего стейта
-      console.log('Before optimistic update:', prev);
+      const prevTasksCopy = [...tasks]; // сохранение текущего стейта для отката
+      console.log('Before optimistic update:', prevTasksCopy);
 
       // Оптимистичное обновление
-      setTasks(optimisticUpdate(prev));
+      setTasks(optimisticUpdate(tasks));
 
       try {
-        const result = await serverRequest();
-        if (result) {
-            // Обновление задачи на основе ответа сервера
-            setTasks(current =>
-              current.map(t => (t.id === result.id ? result : t))
-            );
-        }
+        await serverRequest();
       } catch (e) {
         console.error(e);
-        setTasks(rollback(prev)); // откат
+        setTasks(prevTasksCopy);
         alert("Ошибка при синхронизации с сервером");
       }
     }
 
     //Функция для добавления новой задачи
-    async function addTask(value, date = "") {
+    function addTask(value, date = "") {
       const tempId = nanoid();
       const optimisticTask = { id: tempId, value, date, completed: false };
 
-      await performTaskMutation({
+      performTaskMutation({
         optimisticUpdate: (prev) => [...prev, optimisticTask],
         serverRequest: () => api.addTask(tempId, value, date),
-        rollback: (prev) => prev.filter(t => t.id !== tempId),
       });
 
       return tempId;
     }
 
     //Функция для удаления задачи
-    async function deleteTask(id) {
+    function deleteTask(id) {
       const taskToDelete = tasks.find(t => t.id === id);
       if (!taskToDelete || !window.confirm("Подтвердить удаление")) return;
 
-      await performTaskMutation({
+      performTaskMutation({
         optimisticUpdate: (prev) => prev.filter(t => t.id !== id),
         serverRequest: () => api.deleteTask(id),
-        rollback: (prev) => [...prev, taskToDelete],
       });
     }
 
     //Функция для обновления задачи
-    async function updateTask(id, patch) {
-      await performTaskMutation({
+    function updateTask(id, patch) {
+      performTaskMutation({
         optimisticUpdate: (prev) =>
           prev.map(t => (t.id === id ? { ...t, ...patch } : t)),
         serverRequest: () => api.updateTask(id, patch),
-        rollback: (prev) => prev
       });
     }
 
@@ -103,7 +93,7 @@ export function TaskDataProvider({ children }) {
     }
 
     //Функция для изменения даты задачи
-    async function setTaskDate(id, newDate) {
+    function setTaskDate(id, newDate) {
       const oldDate = tasks.find(task => task.id === id)?.date;
       if (oldDate === newDate) return;
 
