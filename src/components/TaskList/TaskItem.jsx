@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTaskDataContext } from '../../contexts/TaskDataContext';
 import { useTaskUiContext } from '../../contexts/TaskUiContext';
 import ContextMenu from './ContextMenu';
 import { formatDate, getDateColor } from '../../utils/dateHelpers';
 import DatePicker from 'react-datepicker';
 
+
 function TaskItem({ id, value, completed, date }) {
     const [inputValue, setInputValue] = useState(value);
     const editInputRef = useRef(null);
     
-    const { toggleTask, editTask, setNewDate } = useTaskDataContext(); //отметка задачи выполненной/активной
+    const { toggleTask, setTaskValue, setTaskDate } = useTaskDataContext(); //отметка задачи выполненной/активной
     const { activeTaskId, 
             setActiveTaskId,
             openMenuId,
@@ -49,7 +50,7 @@ function TaskItem({ id, value, completed, date }) {
         if (!newValue.trim() || newValue === value) {
             setInputValue(value);
         } else {
-            editTask(id, newValue);
+            setTaskValue(id, newValue);
         }
 
         setIsEditingId(null);
@@ -77,7 +78,7 @@ function TaskItem({ id, value, completed, date }) {
                         />
                     
                     <div className="relative p-[10px] hover:border-none min-w-0 flex-1">
-                        <div className="flex justify-between min-w-0">
+                        <div className="flex justify-between min-w-0 gap-4">
                             <div 
                                 className="grow overflow-hidden" 
                                 onClick={ () => handleTaskOnClick(id) }
@@ -93,17 +94,17 @@ function TaskItem({ id, value, completed, date }) {
                                         className="focus:outline-0 w-full min-w-0"
                                     />
                                 ) : (
-                                    <p className={`${completed && "line-through text-neutral-600"} truncate min-w-0`}>
+                                    <p className={`${completed && "line-through text-neutral-600"} text-clip min-w-0`}>
                                         { value }
                                     </p>
                                 )}
                             </div>
-                            <div className='flex items-center gap-2'>
-                                <div className="taskDate relative">
+                            <div className='flex items-center whitespace-nowrap'>
+                                <div className="relative">
                                     {(date && !dateIsEditing) && (
                                         <span 
                                             className={!completed ? `${getDateColor(date)} cursor-pointer` : 'text-neutral-600'}
-                                            onClick={!completed && (() => setDateIsEditing(true))}>
+                                            onClick={!completed ? (() => setDateIsEditing(true)) : null}>
                                             {formatDate(date)}
                                         </span> 
                                     )}
@@ -112,7 +113,7 @@ function TaskItem({ id, value, completed, date }) {
                                             className='flex items-center justify-center w-[20px] h-[20px] cursor-pointer hover:bg-[#4d4d4d] hover:rounded' 
                                             onClick={() => setDateIsEditing(true)}
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="16px" height="16px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="16px" height="16px" viewBox="0 0 64 64" enableBackground="new 0 0 64 64" xmlSpace="preserve">
                                                 <g>
                                                     <path fill="#808080" d="M60,4h-7V3c0-1.657-1.343-3-3-3s-3,1.343-3,3v1H17V3c0-1.657-1.343-3-3-3s-3,1.343-3,3v1H4   C1.789,4,0,5.789,0,8v52c0,2.211,1.789,4,4,4h56c2.211,0,4-1.789,4-4V8C64,5.789,62.211,4,60,4z M18,53c0,0.553-0.447,1-1,1h-6   c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z M18,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5   c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M18,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6   c0.553,0,1,0.447,1,1V31z M30,53c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z    M30,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M30,31   c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V31z M42,53c0,0.553-0.447,1-1,1h-6   c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V53z M42,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5   c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z M42,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6   c0.553,0,1,0.447,1,1V31z M54,42c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V42z    M54,31c0,0.553-0.447,1-1,1h-6c-0.553,0-1-0.447-1-1v-5c0-0.553,0.447-1,1-1h6c0.553,0,1,0.447,1,1V31z M62,15H2V8   c0-1.104,0.896-2,2-2h7v4c0,1.657,1.343,3,3,3s3-1.343,3-3V6h30v4c0,1.657,1.343,3,3,3s3-1.343,3-3V6h7c1.104,0,2,0.896,2,2V15z"/>
                                                 </g>
@@ -124,7 +125,7 @@ function TaskItem({ id, value, completed, date }) {
                                             <DatePicker
                                                 selected={date}
                                                 onChange={(newDate) => setTempDate(newDate)}
-                                                onClickOutside={() => { setDateIsEditing(false); setNewDate(id, tempDate); }}
+                                                onClickOutside={() => { setDateIsEditing(false); setTaskDate(id, tempDate); }}
                                                 inline
                                             />
                                         </div>
@@ -161,4 +162,4 @@ function TaskItem({ id, value, completed, date }) {
 
 }
 
-export default TaskItem;
+export default React.memo(TaskItem);

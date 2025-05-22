@@ -7,7 +7,7 @@ A simple yet functional to-do list application built with **React**, using **Con
 * 📋 Add, edit, and delete tasks
 * ✅ Mark tasks as completed
 * 🗓️ Set and update due dates using a calendar
-* 💾 Persistent storage via `localStorage`
+* 💾 Persistent storage via REST API (`db.json`)
 * 🎨 Clean and responsive UI with Tailwind CSS
 * ⚛️ Built using functional components and React Hooks
 
@@ -17,12 +17,14 @@ A simple yet functional to-do list application built with **React**, using **Con
 * [Vite](https://vitejs.dev/)
 * [Tailwind CSS](https://tailwindcss.com/)
 * [React DatePicker](https://reactdatepicker.com/)
+* [JSON Server](https://github.com/typicode/json-server) – for simulating a RESTful backend
 * Custom `dateHelpers` for formatting and handling dates
 
 ## 📂 Project Structure
 
 ```
 src/
+├── api/               # API wrapper for working with JSON Server (e.g., tasks.js)
 ├── components/        # UI components (TaskItem, TaskList, etc.)
 ├── context/           # TaskDataContext & TaskUiContext for global state management
 ├── hooks/             # Custom React hooks (e.g., usePersistedState)
@@ -76,6 +78,3 @@ Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 * Drag & drop task ordering
 * Auth and cloud sync
 
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
