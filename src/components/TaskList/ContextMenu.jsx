@@ -1,9 +1,10 @@
-import { useTaskDataContext } from "../../contexts/TaskDataContext";
-import { useTaskUiContext } from "../../contexts/TaskUiContext";
+import { useDispatch } from 'react-redux'
+import { deleteTask } from './tasksSlice' 
 
-function ContextMenu({menuRef, id}) {
-    const { deleteTask } = useTaskDataContext();
-    const { setIsEditingId } = useTaskUiContext();
+
+
+function ContextMenu({menuRef, id, handleTaskOnClick}) {
+    const dispatch = useDispatch();
 
     return (
         <div
@@ -13,14 +14,14 @@ function ContextMenu({menuRef, id}) {
         >
             <button 
                 className="w-full text-left p-[5px] hover:bg-[#3d3d3d] hover:rounded text-[#ffffffcc]"
-                onClick={ () => setIsEditingId(id) }
+                onClick={ () => handleTaskOnClick(id) }
             >
                     Редактировать
             </button>
 
             <button
                 className="w-full text-left p-[5px] hover:bg-[#3d3d3d] hover:rounded text-[#ffffffcc]"
-                onClick={ () => deleteTask(id)}>
+                onClick={ () => dispatch(deleteTask(id)) }>
                     Удалить
             </button>
         </div>

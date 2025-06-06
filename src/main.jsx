@@ -1,28 +1,25 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from 'react-router-dom';
-import Root from './routes/root.jsx'
-import ErrorPage404 from './error-page-404';
-import About from './routes/about.jsx'
+import App from './App.jsx'
+import { store } from './app/store'
+import { Provider } from 'react-redux'
+import { worker } from './api/server'
+import { TaskUiProvider } from './contexts/TaskUiContext.jsx'
 
-const router = createBrowserRouter([
-	{
-		path: '/',
-		element: <Root />,
-    errorElement: <ErrorPage404 />,
-	},
-  {
-		path: '/about',
-		element: <About />
-	},
-]);
+async function main() {
+  await worker.start({ onUnhandledRequest: 'bypass' });
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <Provider store={store}>
+        <TaskUiProvider>
+          <App />
+        </TaskUiProvider>
+      </Provider>
+    </StrictMode>,
+  );
+}
+
+main();
+

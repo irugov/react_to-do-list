@@ -1,28 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useTaskDataContext } from '../../contexts/TaskDataContext';
+import { useState, useRef, useEffect } from 'react';
 import { useTaskUiContext } from '../../contexts/TaskUiContext';
 import ContextMenu from './ContextMenu';
 import { formatDate, getDateColor } from '../../utils/dateHelpers';
 import DatePicker from 'react-datepicker';
+import { useDispatch } from 'react-redux'
+import { updateTask } from './tasksSlice'
 
 
 function TaskItem({ id, value, completed, date }) {
-    const [inputValue, setInputValue] = useState(value);
-    const editInputRef = useRef(null);
-    
-    const { toggleTask, setTaskValue, setTaskDate } = useTaskDataContext(); //отметка задачи выполненной/активной
+    const [taskValue, setTaskValue] = useState(value);
+    const [taskCompleted, setTaskCompleted] = useState(completed);
+    const [taskDate, setTaskDate] = useState(date);
+
+    const editInputRef = useRef(null); //ссылка на редактирующийся таск
+    const [inputValue, setInputValue] = useState(value); //чтобы taskValue редактировался только при закрытии инпута, не во время печатания
+
+    const menuRef = useRef(null); // ссылка на меню, открытое для конкретного таска
+
+    const [dateIsEditing, setDateIsEditing] = useState(false); //Открытие/закрытие меню выбора даты для задачи
+    const [tempDate, setTempDate] = useState(null); //чтобы при клике на даты в DatePicker не выпонялось изменение даты сразу, а только после закрытия меню
+
     const { activeTaskId, 
             setActiveTaskId,
             openMenuId,
             setOpenMenuId,
             isEditingId,
             setIsEditingId
-        } = useTaskUiContext();
+        } = useTaskUiContext(); //управление состоянием UI
 
-    const menuRef = useRef(null); // Ссылка на DOM-элемент меню, для предотвращения нескольких открытых одновременно меню для разных задач
-
-    const [dateIsEditing, setDateIsEditing] = useState(false); //Открытие/закрытие меню выбора даты для задачи
-    const [tempDate, setTempDate] = useState(null); //чтобы при клике на даты в DatePicker не выпонялось изменение сразу, а только после закрытия меню
+    const dispatch = useDispatch(); 
 
     // Закрытие меню при клике вне его области
     useEffect(() => {
@@ -45,15 +51,50 @@ function TaskItem({ id, value, completed, date }) {
         setIsEditingId(id);
     }
 
-    //Функция-обработчик отредактированного значения таска
-    function handleEditTask(id, newValue) {
-        if (!newValue.trim() || newValue === value) {
-            setInputValue(value);
-        } else {
-            setTaskValue(id, newValue);
-        }
+    //Функция для обновления таска в базе
+    function handleUpdateTask(id, updates) {
+        dispatch(
+            updateTask({
+                id,
+                ...updates
+            })
+        )
+    }
 
-        setIsEditingId(null);
+    //Функция-обработчик изменения value
+    function handleUpdateTaskValue(id, newValue) {
+        if(newValue.trim() && newValue !== taskValue) {
+            try {
+                handleUpdateTask(id, {value: newValue});
+                setTaskValue(newValue);
+            } catch (err) {
+                console.error(err.message);
+            }
+        }
+    }
+
+    //Функция-обработчик изменения date
+    function handleUpdateTaskDate(id) {
+        if(tempDate && tempDate !== taskDate) {
+            try {
+                handleUpdateTask(id, {date: tempDate.toISOString()});
+                setTaskDate(tempDate);
+            } catch (err) {
+                console.error(err.message);
+            }
+        }
+    }
+
+    //Функция-обработчик изменения completed
+    function handleToggleTaskCompleted(id) {
+        const newCompleted = !taskCompleted;
+
+        try {
+            handleUpdateTask(id, {completed: newCompleted});
+            setTaskCompleted(newCompleted)
+        } catch (err) {
+            console.error(err.message);
+        }
     }
     
 
@@ -73,9 +114,9 @@ function TaskItem({ id, value, completed, date }) {
                 
                 <div className="flex items-center px-[14px] min-w-0">
                     <input type="checkbox" className="appearance-none w-[18px] h-[18px] cursor-pointer border border-[#535358] rounded mr-[5px] hover:bg-[#535358] checked:bg-[#535358] checked:bg-no-repeat checked:bg-center" 
-                        checked={ completed }
-                        onChange={ () => toggleTask(id) }
-                        />
+                        checked={ taskCompleted }
+                        onChange={ () => handleToggleTaskCompleted(id) }
+                    />
                     
                     <div className="relative p-[10px] hover:border-none min-w-0 flex-1">
                         <div className="flex justify-between min-w-0 gap-4">
@@ -88,7 +129,7 @@ function TaskItem({ id, value, completed, date }) {
                                         ref={editInputRef}
                                         value={inputValue}
                                         onChange={(e) => setInputValue(e.target.value)}
-                                        onBlur={(e) => {handleEditTask(id, e.target.value)}}
+                                        onBlur={(e) => {handleUpdateTaskValue(id, e.target.value)}}
                                         onKeyDown={ (e) => {e.key === "Enter" && editInputRef.current.blur()} }
                                         autoFocus
                                         className="focus:outline-0 w-full min-w-0"
@@ -101,14 +142,14 @@ function TaskItem({ id, value, completed, date }) {
                             </div>
                             <div className='flex items-center whitespace-nowrap'>
                                 <div className="relative">
-                                    {(date && !dateIsEditing) && (
+                                    {(taskDate && !dateIsEditing) && (
                                         <span 
-                                            className={!completed ? `${getDateColor(date)} cursor-pointer` : 'text-neutral-600'}
+                                            className={!completed ? `${getDateColor(taskDate)} cursor-pointer` : 'text-neutral-600'}
                                             onClick={!completed ? (() => setDateIsEditing(true)) : null}>
-                                            {formatDate(date)}
+                                            {formatDate(taskDate)}
                                         </span> 
                                     )}
-                                    {(!date && !completed) && (
+                                    {(!taskDate && !completed) && (
                                         <div 
                                             className='flex items-center justify-center w-[20px] h-[20px] cursor-pointer hover:bg-[#4d4d4d] hover:rounded' 
                                             onClick={() => setDateIsEditing(true)}
@@ -123,14 +164,14 @@ function TaskItem({ id, value, completed, date }) {
                                     {dateIsEditing && (
                                         <div className="absolute top-[-10px] right-0 z-50">
                                             <DatePicker
-                                                selected={date}
+                                                selected={taskDate}
                                                 onChange={(newDate) => setTempDate(newDate)}
-                                                onClickOutside={() => { setDateIsEditing(false); setTaskDate(id, tempDate); }}
+                                                onClickOutside={() => { setDateIsEditing(false); handleUpdateTaskDate(id); }}
                                                 inline
                                             />
                                         </div>
                                     )}
-                                    </div>
+                                </div>
                                 
                             </div>    
                         </div>
@@ -155,6 +196,7 @@ function TaskItem({ id, value, completed, date }) {
                 <ContextMenu 
                     menuRef={menuRef}
                     id={id}
+                    handleTaskOnClick={handleTaskOnClick}
                 />
             )}
         </li>
@@ -162,4 +204,4 @@ function TaskItem({ id, value, completed, date }) {
 
 }
 
-export default React.memo(TaskItem);
+export default TaskItem;
