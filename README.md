@@ -1,6 +1,3 @@
-Вот обновлённое описание с учётом всех изменений:
-
----
 
 # 📝 React To-Do List
 
@@ -97,6 +94,3 @@ Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 * Drag & drop task ordering
 * Authentication and cloud sync
 
----
-
-Хочешь — могу сгенерировать также README в `markdown`-файле для вставки в GitHub.
