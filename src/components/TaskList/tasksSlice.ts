@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk, PayloadAction  } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction, nanoid  } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
 // 1. Интерфейсы состояний и задач
 interface Task {
 	id: string;
 	value: string;
-	date: Date | undefined;
+	date: Date | null;
 	completed: boolean;
 }
   
@@ -31,10 +31,10 @@ export const fetchTasks = createAsyncThunk<Task[]>(
 	}
 );
 
-export const addTask = createAsyncThunk<Task, Omit<Task, 'id'>>(
+export const addTask = createAsyncThunk<Task, Omit<Task, 'id' | 'completed'>>(
 	'tasks/addTask',
 	async (newTask) => {
-		const response = await client.post('/fakeServer', newTask)
+		const response = await client.post('/fakeServer', newTask);
 		return response.data
 	}
 );

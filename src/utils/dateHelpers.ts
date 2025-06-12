@@ -1,12 +1,12 @@
-const today = new Date();
+const today: Date = new Date();
 today.setHours(0, 0, 0, 0);
 
 
-export const formatDate = (date) => {
-    const taskDate = new Date(date);
+export const formatDate = (date: Date | string): string => {
+    const taskDate: Date = new Date(date);
     taskDate.setHours(0, 0, 0, 0);
 
-    const diffDays = Math.floor((taskDate - today) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
     if (diffDays === 0) return 'Сегодня';
     if (diffDays === 1) return 'Завтра';
@@ -24,9 +24,9 @@ export const formatDate = (date) => {
   };
 
 
-export const getDateColor = (date) => {
+export const getDateColor = (date: Date | string): string => {
     const taskDate = new Date(date);
     taskDate.setHours(0, 0, 0, 0);
     
-    return taskDate >= today ? 'text-blue-500' : 'text-red-500';
+    return (taskDate.getTime() >= today.getTime()) ? 'text-blue-500' : 'text-red-500';
   };

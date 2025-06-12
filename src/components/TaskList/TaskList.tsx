@@ -1,32 +1,42 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import usePersistedState from '../../hooks/usePersistedState';
+import { AppDispatch, RootState } from '../../app/store';
 import { selectAllTasks, fetchTasks } from './tasksSlice';
+import usePersistedState from '../../hooks/usePersistedState';
 import TaskSection from './TaskSection';
 import TaskForm from './TaskForm';
 
 export const TaskList = () => {  
   // Получаем все данные из контекста
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const tasks = useSelector(selectAllTasks);
-  const taskStatus = useSelector((state) => state.tasks.status);
+  const taskStatus = useSelector((state: RootState) => state.tasks.status);
   const dataFetch = useRef(false);
-  const error = useSelector((state) => state.tasks.error);
+  const error = useSelector((state: RootState) => state.tasks.error);
   let content;
 
   // Разделяем задачи на активные и завершенные
   const activeTasks = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
   const completedTasks = useMemo(() => tasks.filter(task => task.completed), [tasks]);
   
-  // Использование кастомного хука:
-  const [sectionsVisibility, setSectionsVisibility] = usePersistedState('sectionsVisibility', {
-    active: false,
-    completed: true
-  });
+  //Тип для состояния видимости секции
+  type SectionsVisibility = {
+    active: boolean,
+    completed: boolean
+  }
 
-  // Универсальная функция для переключения видимости списков задач
-  function toggleVisibility(section) {
-    setSectionsVisibility(prev => ({
+  //Типизированное использование кастомного хука:
+  const [sectionsVisibility, setSectionsVisibility] = usePersistedState<SectionsVisibility>(
+    'sectionsVisibility', 
+    {
+      active: false,
+      completed: true
+    }
+  );
+
+  //Типизированная функция для переключения видимости списков задач
+  function toggleVisibility(section: keyof SectionsVisibility) {
+    setSectionsVisibility((prev: SectionsVisibility) => ({
       ...prev,
       [section]: !prev[section]
     }));

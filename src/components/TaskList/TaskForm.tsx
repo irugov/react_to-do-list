@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../app/store';
 import { addTask } from './tasksSlice'
 import DatePicker from 'react-datepicker';
 import { formatDate, getDateColor } from '../../utils/dateHelpers';
 
 function TaskForm() {
-    const [inputValue, setInputValue] = useState('');
-    const [date, setDate] = useState(null);
-    const [dateIsEditing, setDateIsEditing] = useState(false);
+    const [inputValue, setInputValue] = useState<string>('');
+    const [date, setDate] = useState<Date | null>(null);
+    const [dateIsEditing, setDateIsEditing] = useState<boolean>(false);
 
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
     const [requestStatus, setRequestStatus] = useState('idle');
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async() => {
         const value = inputValue.trim();
         if(value && requestStatus === 'idle') {
             try {
                 setRequestStatus('in progress');
-                await dispatch(addTask({value, date})).unwrap();
-                e.target.value = '';
+                await dispatch(addTask({ value: value, date: date})).unwrap();
                 setInputValue('');
                 setDate(null);
             } catch (err) {
@@ -34,7 +34,7 @@ function TaskForm() {
             className="flex flex-none rounded-[6px] bg-neutral-800 w-full px-[12px] py-[7px] mb-[20px] placeholder:text-neutral-600" placeholder="+ Добавить задачу"
             value={ inputValue }
             onChange={ (e) => setInputValue(e.target.value) }
-            onKeyDown={ (e) => {e.key === "Enter" && handleSubmit(e)} }    
+            onKeyDown={ (e) => {e.key === "Enter" && handleSubmit()} }    
         />
         {!dateIsEditing ? 
             (   
