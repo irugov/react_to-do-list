@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction, nanoid  } from '@reduxjs/
 import { client } from '../../api/client'
 
 // 1. Интерфейсы состояний и задач
-interface Task {
+export interface Task {
 	id: string;
 	value: string;
 	date: Date | null;

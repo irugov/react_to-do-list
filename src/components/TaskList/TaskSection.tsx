@@ -1,6 +1,15 @@
-import TaskItem from './TaskItem';
+import { Task } from './tasksSlice';
+import { TaskItem } from './TaskItem';
+import React from 'react';
 
-function TaskSection({toggleVisibility, sectionsVisibility, title, tasks }) {
+interface TaskSectionProps {
+    toggleVisibility: () => void,
+    sectionsVisibility: boolean,
+    title: string,
+    tasks: Task[],
+}
+
+export const TaskSection: React.FC<TaskSectionProps> = ({toggleVisibility, sectionsVisibility, title, tasks}) => {
     return (
         <section>
                 <div className="flex items-center gap-[7.5px] pl-[20px] h-[40px] cursor-pointer" onClick={ toggleVisibility}>
@@ -33,6 +42,4 @@ function TaskSection({toggleVisibility, sectionsVisibility, title, tasks }) {
         </section>
     );
 }
-
-export default TaskSection;
 

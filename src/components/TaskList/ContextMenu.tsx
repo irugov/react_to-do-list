@@ -1,10 +1,16 @@
-import { useDispatch } from 'react-redux'
-import { deleteTask } from './tasksSlice' 
+import { RefObject } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../app/store';
+import { deleteTask } from './tasksSlice';
 
+interface ContextMenuProps {
+    menuRef: RefObject<HTMLDivElement | null>,
+    id: string,
+    handleTaskOnClick: (id: string) => void,
+}
 
-
-function ContextMenu({menuRef, id, handleTaskOnClick}) {
-    const dispatch = useDispatch();
+export const ContextMenu: React.FC<ContextMenuProps> = ({menuRef, id, handleTaskOnClick}) => {
+    const dispatch: AppDispatch = useDispatch();
 
     return (
         <div

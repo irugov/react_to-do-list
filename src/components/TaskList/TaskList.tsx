@@ -1,23 +1,25 @@
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, JSX } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, RootState } from '../../app/store';
-import { selectAllTasks, fetchTasks } from './tasksSlice';
+import { selectAllTasks, fetchTasks, Task } from './tasksSlice';
 import usePersistedState from '../../hooks/usePersistedState';
-import TaskSection from './TaskSection';
-import TaskForm from './TaskForm';
+import { TaskSection } from './TaskSection';
+import { TaskForm } from './TaskForm';
 
-export const TaskList = () => {  
+export const TaskList: React.FC = () => {  
   // Получаем все данные из контекста
   const dispatch: AppDispatch = useDispatch();
-  const tasks = useSelector(selectAllTasks);
-  const taskStatus = useSelector((state: RootState) => state.tasks.status);
-  const dataFetch = useRef(false);
-  const error = useSelector((state: RootState) => state.tasks.error);
-  let content;
+  const tasks: Task[] = useSelector(selectAllTasks);
+  const taskStatus: 'idle' | 'in progress' | 'success' | 'fail' = useSelector((state: RootState) => state.tasks.status);
+  const error: string | null = useSelector((state: RootState) => state.tasks.error);
+
+  const dataFetch = useRef<boolean>(false);
+
+  let content: JSX.Element | JSX.Element[] | null = null;;
 
   // Разделяем задачи на активные и завершенные
-  const activeTasks = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
-  const completedTasks = useMemo(() => tasks.filter(task => task.completed), [tasks]);
+  const activeTasks: Task[] = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
+  const completedTasks: Task[] = useMemo(() => tasks.filter(task => task.completed), [tasks]);
   
   //Тип для состояния видимости секции
   type SectionsVisibility = {
