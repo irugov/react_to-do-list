@@ -56,7 +56,13 @@ const saveTasksToStorage = (tasks: DbTask[]) => {
 
 export const handlers = [
     http.get('/fakeServer', async () => {
-        const tasks = db.task.getAll();
+        const tasks = db.task.getAll().map((task: DbTask) => {
+            if(!task.date) return task;
+            return {
+                ...task,
+                date: new Date(task.date)
+            }
+        });
         //await delay(ARTIFICIAL_DELAY_MS);
         return HttpResponse.json(tasks);
     }),

@@ -1,7 +1,14 @@
+import React from 'react'
 import { useRouteError } from 'react-router-dom';
 
-function ErrorPage404() {
-	const error = useRouteError();
+type RouteError = {
+    status?: number;
+    statusText?: string;
+    data?:  string;
+};
+
+const ErrorPage404: React.FC = () => {
+	const error = useRouteError() as RouteError;
 	console.error(error);
 
     return (

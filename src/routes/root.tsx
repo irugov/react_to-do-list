@@ -1,6 +1,7 @@
+import React from 'react'
 import { Outlet } from 'react-router-dom';
 
-function Root() {
+const Root: React.FC = () => {
   
     return (
       <Outlet />

@@ -31,8 +31,8 @@ export const TaskList: React.FC = () => {
   const [sectionsVisibility, setSectionsVisibility] = usePersistedState<SectionsVisibility>(
     'sectionsVisibility', 
     {
-      active: false,
-      completed: true
+      active: true,
+      completed: false
     }
   );
 
